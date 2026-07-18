@@ -5,89 +5,121 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>IconMotion Studio AI</title>
 <style>
-body { font-family: Arial, sans-serif; margin:0; background:#111; color:#fff; }
-header { padding:20px; text-align:center; background:#1e1e1e; }
-.container { padding:20px; max-width:1000px; margin:auto; }
-.controls { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
-.card { background:#222; padding:15px; border-radius:10px; }
-#canvas {
-  width:100%; height:420px; position:relative; overflow:hidden;
-  background:#00FF00; border:3px solid #444; border-radius:12px;
+body{margin:0;font-family:Arial,sans-serif;background:#0f0f12;color:#fff}
+header{text-align:center;padding:20px;background:#18181c}
+.container{max-width:1100px;margin:auto;padding:20px}
+.panel{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.card{background:#1d1d22;padding:15px;border-radius:16px;box-shadow:0 0 10px rgba(0,0,0,.2)}
+select,input,button{width:100%;padding:12px;border-radius:10px;border:none;font-size:16px}
+button{cursor:pointer}
+.actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:12px}
+#canvas{
+height:500px;background:#00FF00;border:6px solid #fff;border-radius:24px;
+position:relative;overflow:hidden;margin-top:20px;
 }
-.icon {
-  position:absolute; font-size:42px; animation: float 4s ease-in-out infinite;
+.icon{position:absolute;font-size:52px;user-select:none;animation:float 4s infinite ease-in-out}
+@keyframes float{
+0%{transform:translateY(0) rotate(0deg)}
+50%{transform:translateY(-20px) rotate(10deg)}
+100%{transform:translateY(0) rotate(0deg)}
 }
-@keyframes float {
-  0% { transform: translateY(0px) rotate(0deg);}
-  50% { transform: translateY(-20px) rotate(10deg);}
-  100% { transform: translateY(0px) rotate(0deg);}
-}
-button, select {
-  width:100%; padding:10px; border-radius:8px; border:none;
-}
-footer { text-align:center; padding:16px; color:#bbb; }
+footer{text-align:center;padding:20px;color:#aaa}
 </style>
 </head>
 <body>
 <header>
 <h1>IconMotion Studio AI</h1>
-<p>Create animated icon scenes with Green Screen backgrounds.</p>
+<p>Generate animated icon scenes with Green Screen backgrounds.</p>
 </header>
 
 <div class="container">
-  <div class="controls">
-    <div class="card">
-      <label>Background</label>
-      <select id="bg">
-        <option value="#00FF00">Green Screen</option>
-        <option value="#FFFFFF">White</option>
-        <option value="#000000">Black</option>
-        <option value="#4F46E5">Indigo</option>
-      </select>
-    </div>
-    <div class="card">
-      <label>Template</label>
-      <select id="template">
-        <option>AI Tools</option>
-        <option>Business</option>
-        <option>Technology</option>
-      </select>
-    </div>
-    <div class="card">
-      <label>&nbsp;</label>
-      <button onclick="generateIcons()">Generate Icons</button>
-    </div>
-  </div>
-
-  <br>
-  <div id="canvas"></div>
+<div class="panel">
+<div class="card">
+<label>Background</label>
+<select id="bg">
+<option value="#00FF00">Green Screen</option>
+<option value="#FFFFFF">White</option>
+<option value="#000000">Black</option>
+<option value="#4F46E5">Indigo</option>
+<option value="#FFB703">Gold</option>
+</select>
 </div>
 
-<footer>
-Ready for GitHub Pages deployment. Export rendering can be added later using Remotion.
-</footer>
+<div class="card">
+<label>Template</label>
+<select id="template">
+<option>Technology</option>
+<option>AI Tools</option>
+<option>Business</option>
+</select>
+</div>
+
+<div class="card">
+<label>Frame Color</label>
+<input type="color" id="frameColor" value="#ffffff">
+</div>
+
+<div class="card">
+<label>Animation</label>
+<select id="anim">
+<option>Floating</option>
+<option>Fast</option>
+<option>Slow</option>
+</select>
+</div>
+</div>
+
+<div class="actions">
+<button onclick="generateIcons()">Generate Icons</button>
+<button onclick="downloadPNG()">Download PNG</button>
+<button onclick="downloadHTML()">Download Project</button>
+</div>
+
+<div id="canvas"></div>
+</div>
+
+<footer>GitHub Pages Ready • MP4 Export can be added with ffmpeg.wasm</footer>
 
 <script>
-const canvas = document.getElementById('canvas');
-const bg = document.getElementById('bg');
+const canvas=document.getElementById("canvas");
+const bg=document.getElementById("bg");
+const frame=document.getElementById("frameColor");
 
-bg.addEventListener('change', () => {
-  canvas.style.background = bg.value;
+bg.onchange=()=>canvas.style.background=bg.value;
+frame.oninput=()=>canvas.style.borderColor=frame.value;
+
+const sets={
+"Technology":["⚙️","☁️","💬","📊","🔗","🗄️","🛡️","🤖"],
+"AI Tools":["🤖","🧠","⚡","🔮","💡","📡","🛰️","🧬"],
+"Business":["💼","📈","💰","🧾","🏢","📞","📋","🗂️"]
+};
+
+function generateIcons(){
+canvas.innerHTML="";
+const t=document.getElementById("template").value;
+const anim=document.getElementById("anim").value;
+sets[t].forEach(icon=>{
+let d=document.createElement("div");
+d.className="icon";
+d.textContent=icon;
+d.style.left=(Math.random()*90)+"%";
+d.style.top=(Math.random()*85)+"%";
+if(anim==="Fast") d.style.animationDuration="2s";
+else if(anim==="Slow") d.style.animationDuration="6s";
+canvas.appendChild(d);
 });
+}
 
-function generateIcons() {
-  canvas.innerHTML = '';
-  const icons = ['🤖','☁️','💬','📊','⚙️','🛡️','🗄️','⚡','🧠','🔗'];
+function downloadPNG(){
+alert("PNG export placeholder. Integrate html2canvas for full export.");
+}
 
-  icons.forEach((icon, i) => {
-    const div = document.createElement('div');
-    div.className = 'icon';
-    div.textContent = icon;
-    div.style.left = Math.random()*90 + '%';
-    div.style.top = Math.random()*80 + '%';
-    div.style.animationDuration = (2 + Math.random()*4) + 's';
-    canvas.appendChild(div);
-  });
+function downloadHTML(){
+const blob=new Blob([document.documentElement.outerHTML],{type:'text/html'});
+const a=document.createElement('a');
+a.href=URL.createObjectURL(blob);
+a.download='index.html';
+a.click();
 }
 
 generateIcons();
