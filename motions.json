@@ -1,5 +1,22 @@
 [
-  "Float",
-  "Rotate",
-  "Bounce"
+    "Float",
+    "Rotate",
+    "Bounce",
+    "Orbit",
+    "Wave",
+    "Pulse",
+    "Spiral",
+    "Shake",
+    "Rain",
+    "Snow",
+    "Galaxy",
+    "DNA",
+    "Particle",
+    "Explosion",
+    "Zoom In",
+    "Zoom Out",
+    "Fade",
+    "Magnet",
+    "Swarm",
+    "Fireflies"
 ]
