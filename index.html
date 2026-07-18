@@ -2,38 +2,25 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IconMotion Studio AI</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IconMotion Studio AI v1.0</title>
 <style>
-body{margin:0;font-family:Arial,sans-serif;background:#0f0f12;color:#fff}
-header{text-align:center;padding:20px;background:#18181c}
-.container{max-width:1100px;margin:auto;padding:20px}
-.panel{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
-.card{background:#1d1d22;padding:15px;border-radius:16px;box-shadow:0 0 10px rgba(0,0,0,.2)}
-select,input,button{width:100%;padding:12px;border-radius:10px;border:none;font-size:16px}
-button{cursor:pointer}
-.actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:12px}
-#canvas{
-height:500px;background:#00FF00;border:6px solid #fff;border-radius:24px;
-position:relative;overflow:hidden;margin-top:20px;
-}
-.icon{position:absolute;font-size:52px;user-select:none;animation:float 4s infinite ease-in-out}
-@keyframes float{
-0%{transform:translateY(0) rotate(0deg)}
-50%{transform:translateY(-20px) rotate(10deg)}
-100%{transform:translateY(0) rotate(0deg)}
-}
-footer{text-align:center;padding:20px;color:#aaa}
+body{font-family:Arial,sans-serif;margin:0;background:#101216;color:#fff}
+.wrap{max-width:1200px;margin:auto;padding:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.card{background:#1b1f27;padding:12px;border-radius:10px}
+select,input,button{width:100%;padding:10px;border-radius:8px;border:none}
+canvas{width:100%;aspect-ratio:16/9;background:#00FF00;border:4px solid #fff;border-radius:16px;margin-top:15px}
+.actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-top:10px}
+small{color:#bbb}
 </style>
 </head>
 <body>
-<header>
-<h1>IconMotion Studio AI</h1>
-<p>Generate animated icon scenes with Green Screen backgrounds.</p>
-</header>
+<div class="wrap">
+<h1>IconMotion Studio AI v1.0</h1>
+<p>GitHub Pages Ready • Canvas Renderer • Green Screen</p>
 
-<div class="container">
-<div class="panel">
+<div class="grid">
 <div class="card">
 <label>Background</label>
 <select id="bg">
@@ -41,88 +28,126 @@ footer{text-align:center;padding:20px;color:#aaa}
 <option value="#FFFFFF">White</option>
 <option value="#000000">Black</option>
 <option value="#4F46E5">Indigo</option>
-<option value="#FFB703">Gold</option>
 </select>
 </div>
 
 <div class="card">
 <label>Template</label>
 <select id="template">
-<option>Technology</option>
 <option>AI Tools</option>
+<option>Technology</option>
 <option>Business</option>
+<option>Finance</option>
+<option>Healthcare</option>
+<option>Education</option>
+<option>Gaming</option>
+<option>Cyber Security</option>
+<option>Space</option>
+<option>Marketing</option>
+<option>Robotics</option>
+<option>Productivity</option>
 </select>
 </div>
 
 <div class="card">
-<label>Frame Color</label>
-<input type="color" id="frameColor" value="#ffffff">
+<label>Motion</label>
+<select id="motion">
+<option>Float</option>
+<option>Rotate</option>
+<option>Bounce</option>
+<option>Orbit</option>
+</select>
 </div>
 
 <div class="card">
-<label>Animation</label>
-<select id="anim">
-<option>Floating</option>
-<option>Fast</option>
-<option>Slow</option>
-</select>
+<label>Icon Count</label>
+<input id="count" type="number" min="1" max="100" value="20">
 </div>
 </div>
 
 <div class="actions">
-<button onclick="generateIcons()">Generate Icons</button>
-<button onclick="downloadPNG()">Download PNG</button>
-<button onclick="downloadHTML()">Download Project</button>
+<button onclick="generate()">Generate</button>
+<button onclick="startRecording()">Start Record</button>
+<button onclick="stopRecording()">Stop Record</button>
+<button onclick="alert('PNG export: integrate html2canvas')">PNG</button>
 </div>
 
-<div id="canvas"></div>
-</div>
+<canvas id="canvas" width="1920" height="1080"></canvas>
 
-<footer>GitHub Pages Ready • MP4 Export can be added with ffmpeg.wasm</footer>
+<p><small>
+This version includes Canvas rendering and WebM recording. MP4 conversion requires ffmpeg.wasm and is not bundled in a single-file deployment.
+</small></p>
+</div>
 
 <script>
-const canvas=document.getElementById("canvas");
-const bg=document.getElementById("bg");
-const frame=document.getElementById("frameColor");
+const canvas=document.getElementById('canvas');
+const ctx=canvas.getContext('2d');
 
-bg.onchange=()=>canvas.style.background=bg.value;
-frame.oninput=()=>canvas.style.borderColor=frame.value;
+const icons=["🤖","⚙️","💬","📊","☁️","🔗","🛡️","⚡","🧠","💼","📈","🚀"];
+let items=[];
 
-const sets={
-"Technology":["⚙️","☁️","💬","📊","🔗","🗄️","🛡️","🤖"],
-"AI Tools":["🤖","🧠","⚡","🔮","💡","📡","🛰️","🧬"],
-"Business":["💼","📈","💰","🧾","🏢","📞","📋","🗂️"]
-};
+function generate(){
+ items=[];
+ for(let i=0;i<(+count.value||20);i++){
+   items.push({
+     icon:icons[i%icons.length],
+     x:Math.random()*canvas.width,
+     y:Math.random()*canvas.height,
+     vx:(Math.random()-0.5)*4,
+     vy:(Math.random()-0.5)*4,
+     a:0
+   });
+ }
+}
+generate();
 
-function generateIcons(){
-canvas.innerHTML="";
-const t=document.getElementById("template").value;
-const anim=document.getElementById("anim").value;
-sets[t].forEach(icon=>{
-let d=document.createElement("div");
-d.className="icon";
-d.textContent=icon;
-d.style.left=(Math.random()*90)+"%";
-d.style.top=(Math.random()*85)+"%";
-if(anim==="Fast") d.style.animationDuration="2s";
-else if(anim==="Slow") d.style.animationDuration="6s";
-canvas.appendChild(d);
-});
+function render(){
+ ctx.fillStyle=bg.value;
+ ctx.fillRect(0,0,canvas.width,canvas.height);
+ ctx.font="64px Arial";
+
+ items.forEach(p=>{
+   p.x+=p.vx; p.y+=p.vy;
+   if(p.x<0||p.x>canvas.width-64)p.vx*=-1;
+   if(p.y<0||p.y>canvas.height-64)p.vy*=-1;
+
+   if(motion.value==="Rotate"){
+      p.a+=0.05;
+      ctx.save();
+      ctx.translate(p.x,p.y);
+      ctx.rotate(p.a);
+      ctx.fillText(p.icon,0,0);
+      ctx.restore();
+   } else {
+      ctx.fillText(p.icon,p.x,p.y);
+   }
+ });
+
+ requestAnimationFrame(render);
+}
+render();
+
+let recorder,chunks=[];
+
+function startRecording(){
+ chunks=[];
+ const stream=canvas.captureStream(30);
+ recorder=new MediaRecorder(stream,{mimeType:'video/webm'});
+ recorder.ondataavailable=e=>chunks.push(e.data);
+ recorder.onstop=()=>{
+   const blob=new Blob(chunks,{type:'video/webm'});
+   const a=document.createElement('a');
+   a.href=URL.createObjectURL(blob);
+   a.download='iconmotion.webm';
+   a.click();
+ };
+ recorder.start();
+ alert('Recording started.');
 }
 
-function downloadPNG(){
-alert("PNG export placeholder. Integrate html2canvas for full export.");
+function stopRecording(){
+ if(recorder){ recorder.stop(); }
 }
-
-function downloadHTML(){
-const blob=new Blob([document.documentElement.outerHTML],{type:'text/html'});
-const a=document.createElement('a');
-a.href=URL.createObjectURL(blob);
-a.download='index.html';
-a.click();
-}
-
-generateIcons();
 </script>
 </body>
 </html>
